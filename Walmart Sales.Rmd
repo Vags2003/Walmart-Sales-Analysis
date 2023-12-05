@@ -1,0 +1,118 @@
+---
+title: "Themed dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    theme:
+      bg: "#101010"
+      fg: "#FDF7F7" 
+      primary: "#ED79F9"
+      base_font:
+        google: Prompt
+      code_font:
+        google: JetBrains Mono
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+#importing libraries
+library(flexdashboard)
+library(tidyverse)
+library(highcharter)
+library(viridis)
+library(gt)
+library(htmltools)
+# Install thematic and un-comment for themed static plots (i.e., ggplot2)
+# thematic::thematic_rmd()
+```
+
+```{r}
+# Importing data
+df <- read_csv('WalmartSalesData.csv.csv', show_col_types = FALSE)
+
+
+  
+```
+
+Walmart Sales
+====================================
+
+
+Column {.tabset .tabset-fade data-width=650 .tabset}
+-----------------------------------------------------------------------
+
+### Branch with largest Revenue
+
+```{r}
+#colors
+custom_colors <- viridis::mako(n = 1)
+
+#Most popular Branch by Sales
+df %>% 
+  group_by(Branch) %>% 
+  summarise(Total_revenue = sum(Total)) %>% 
+  arrange(desc(Total_revenue)) %>% 
+  hchart('column', hcaes(x = Branch, y = Total_revenue, coor = custom_colors)) %>% 
+  hc_add_theme(hc_theme_google()) %>% 
+  hc_tooltip(pointformat = '<b>Total Revenue: </b> {point.y} <br>') %>% 
+  hc_title(text = 'Total Revenue of each Branch', style = list(fontSize = '25px', fontweight = 'bold'))
+  
+ 
+```
+
+### Product line with the Highest VAT
+
+```{r}
+#colors
+custom_colors <-viridis::mako(n=6)
+
+#Product line with the Highest VAT
+df %>% 
+  group_by(`Product line`) %>% 
+  summarise(VAT = mean(`Tax 5%`)) %>% 
+  hchart('line', hcaes(x = `Product line`,y = VAT,color = custom_colors)) %>% 
+  hc_add_theme(hc_theme_google()) %>% 
+  hc_tooltip(pointformat = '<b>Proportion: </b> {point.percentage:,.2f}%') %>% 
+  hc_title(text = 'The Product-line with the highest VAT',style = list(fontSize = '15px', fontWeight = 'bold')) %>%
+  hc_credits(enables = TRUE, text = '@miguelfzzz')
+
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Average Rating of each Product line
+
+```{r}
+#colors
+custom_colors <- viridis::inferno(n = 6)
+
+# Average Rating of each product line
+df %>% 
+  group_by(`Product line`) %>% 
+  summarise(Rating = mean(Rating)) %>% 
+  arrange(desc(Rating)) %>% 
+  hchart('pie', hcaes(x = `Product line`, y = `Rating`, coor = custom_colors)) %>% 
+  hc_add_theme(hc_theme_google()) %>% 
+  hc_tooltip(pointformat = '<b>: </b> {point.x} <br>') %>% 
+  hc_title(text = 'Average Rating of each Product line', style = list(fontSize = '25px', fontweight = 'bold'))
+
+```
+
+### Which of the customer types brings the most revenue?
+
+```{r}
+#color
+custom_colors<- viridis::mako(n = 2)
+
+df %>% 
+  group_by(`Customer type`) %>% 
+  summarise(Total_revenue = sum(Total)) %>% 
+  arrange(desc(Total_revenue)) %>% 
+  hchart('column' , hcaes(x = `Customer type`,y = Total_revenue ,color = custom_colors)) %>% 
+  hc_add_theme(hc_theme_google()) %>% 
+  hc_tooltip(pointformat = '<b>: </b> {point.x} <br>') %>%
+  hc_title(text = 'customer types brings the most revenue', style = list(fontSize = '25px', fontweight = 'bold'))
+
+```
+
