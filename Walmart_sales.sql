@@ -1,3 +1,5 @@
+-- language: SQL
+
 -- Create database
 CREATE DATABASE IF NOT EXISTS walmartSales;
 
