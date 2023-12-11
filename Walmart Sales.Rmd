@@ -1,3 +1,4 @@
+--language: R
 ---
 title: "Themed dashboard"
 output: 
